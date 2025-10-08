@@ -4,16 +4,25 @@ A lightweight, frontend-only CRM concept for fitness professionals to manage bas
 
 ## Features
 
+- Multi-page UI with a homepage and top navigation.
 - New Client form with fields: Full Name, Age, Gender, Email, Phone, Fitness Goal, Membership Start Date. The "Add Client" button is a placeholder (no persistence).
 - Client List view showing a table of 10 sample clients with placeholder Edit/Delete buttons.
 - Search box filters rows client-side by name.
 - Responsive design using Flexbox/Grid and media queries.
+
+## Pages
+
+- `index.html`: Homepage with visuals and quick actions.
+- `new-client.html`: New Client form page.
+- `clients.html`: Client List with search.
 
 ## Project Structure
 
 ```
 fitcrm/
 ├── index.html
+├── new-client.html
+├── clients.html
 ├── css/
 │   └── styles.css
 ├── assets/

@@ -1,4 +1,196 @@
 /*
+  FitCRM Styles (Multi-page)
+  - Responsive layout with Flexbox/Grid
+  - Accessible, high-contrast design
+*/
+
+:root {
+  --bg: #0b1020;
+  --surface: #111731;
+  --surface-2: #0e1530;
+  --text: #e6e9f0;
+  --muted: #a4acc4;
+  --primary: #6ee7b7;
+  --primary-700: #34d399;
+  --danger: #f87171;
+  --ring: rgba(110, 231, 183, 0.35);
+  --border: #273053;
+  --table-stripe: rgba(255,255,255,0.035);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 80% -10%, #1b2347 0%, var(--bg) 60%);
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Header / Navbar */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(11, 16, 32, 0.8);
+  -webkit-backdrop-filter: saturate(150%) blur(10px);
+  backdrop-filter: saturate(150%) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand-mark { font-size: 20px; }
+.brand-name { font-weight: 700; letter-spacing: 0.2px; }
+.nav { display: inline-flex; gap: 8px; }
+.nav-link { color: var(--muted); text-decoration: none; padding: 8px 10px; border-radius: 8px; }
+.nav-link:hover, .nav-link.active { color: var(--text); background: rgba(255,255,255,0.06); }
+
+main.container { padding: 28px 16px 48px; }
+
+.card {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  margin-bottom: 22px;
+}
+
+.section-title { margin: 0 0 6px; font-size: 22px; }
+.section-subtitle { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #1a234a;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.06s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: linear-gradient(180deg, #2dd4bf 0%, #22c55e 100%); color: #0b1020; border-color: #1b8f6f; text-decoration: none; }
+.btn-ghost { background: transparent; border-color: var(--border); text-decoration: none; }
+.btn-ghost:hover { background: rgba(255,255,255,0.06); }
+.btn-ghost.danger { color: var(--danger); border-color: rgba(248,113,113,0.3); }
+
+/* Forms */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px 14px;
+}
+.form-field { display: flex; flex-direction: column; gap: 8px; }
+.form-field label { font-size: 13px; color: var(--muted); }
+.form-field input,
+.form-field select {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: #0e1430;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 11px 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.form-field input:focus,
+.form-field select:focus {
+  border-color: var(--primary-700);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+.form-actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.helper-text { color: var(--muted); font-size: 12px; }
+
+/* responsive field spans */
+.form-grid .form-field { grid-column: span 12; }
+@media (min-width: 600px) {
+  .form-grid .form-field { grid-column: span 6; }
+}
+@media (min-width: 900px) {
+  .form-grid .form-field { grid-column: span 4; }
+  .form-grid .form-field:nth-child(1) { grid-column: span 6; }
+  .form-grid .form-field:nth-child(4) { grid-column: span 6; }
+}
+
+/* Tables */
+.table-responsive { width: 100%; overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+.table { width: 100%; border-collapse: collapse; min-width: 720px; }
+.table th, .table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.table thead th { font-size: 12px; letter-spacing: 0.4px; color: var(--muted); background: rgba(255,255,255,0.03); position: sticky; top: 0; backdrop-filter: blur(4px); }
+.table tbody tr:nth-child(odd) { background: var(--table-stripe); }
+.col-actions { width: 160px; }
+.actions { display: flex; gap: 8px; }
+
+/* Hero / Homepage */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+  align-items: center;
+}
+.hero .hero-copy h1 { font-size: 36px; margin: 0 0 10px; }
+.hero .hero-copy p { color: var(--muted); margin: 0 0 18px; }
+.hero .cta-group { display: flex; gap: 10px; flex-wrap: wrap; }
+.masonry {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+.tile {
+  border-radius: 14px;
+  background: linear-gradient(180deg, #152047 0%, #0f1634 100%);
+  border: 1px solid var(--border);
+  /* Use aspect-ratio to guarantee height for child images */
+  aspect-ratio: 3 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  overflow: hidden; /* clip child image to rounded corners */
+}
+.tile.span-2 { grid-column: span 2; }
+.tile.span-3 { grid-column: span 3; }
+.tile.tall { aspect-ratio: 2 / 3; }
+
+/* Tile images */
+.tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .masonry { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 520px) {
+  .masonry { grid-template-columns: repeat(2, 1fr); }
+}
+
+.app-footer { border-top: 1px solid var(--border); padding: 18px 0; color: var(--muted); }
+.visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }
+
+/*
   FitCRM Styles
   - Responsive layout with Flexbox/Grid
   - Accessible, high-contrast design
