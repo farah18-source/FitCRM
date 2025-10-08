@@ -33,8 +33,10 @@ No build needed. Open `index.html` in a modern browser.
 
 ## Deployment
 
-You can deploy using either GitHub Pages or Netlify.
-
+This project is deployed through Netlify. 
+```
+https://fitcrmclientmanager.netlify.app/
+```
 ### Option 1: GitHub Pages
 1. Create a new public GitHub repository (e.g., `fitcrm`).
 2. Push these files to the repository root.
