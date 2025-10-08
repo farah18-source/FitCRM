@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitCRM – Client Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">🏃‍♀️</div>
+          <span class="brand-name">FitCRM</span>
+        </div>
+        <nav class="nav">
+          <a href="#new-client" class="nav-link">New Client</a>
+          <a href="#clients" class="nav-link">Client List</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Page 1: New Client Form -->
+      <section id="new-client" class="card">
+        <h1 class="section-title">Add New Client</h1>
+        <p class="section-subtitle">Capture basic client details and fitness goals.</p>
+
+        <form class="form-grid" action="#" method="get" onsubmit="return false;" aria-describedby="form-note">
+          <div class="form-field">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="fullName" placeholder="Alex Johnson" required />
+          </div>
+          <div class="form-field">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="0" max="120" placeholder="30" />
+          </div>
+          <div class="form-field">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+              <option value="" selected>Select…</option>
+              <option>Female</option>
+              <option>Male</option>
+              <option>Non-binary</option>
+              <option>Prefer not to say</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="alex@example.com" />
+          </div>
+          <div class="form-field">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" />
+          </div>
+          <div class="form-field">
+            <label for="goal">Fitness Goal</label>
+            <input list="goalOptions" id="goal" name="goal" placeholder="Weight Loss" />
+            <datalist id="goalOptions">
+              <option value="Weight Loss"></option>
+              <option value="Muscle Gain"></option>
+              <option value="General Fitness"></option>
+              <option value="Endurance"></option>
+              <option value="Mobility"></option>
+            </datalist>
+          </div>
+          <div class="form-field">
+            <label for="startDate">Membership Start Date</label>
+            <input type="date" id="startDate" name="startDate" />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Add Client</button>
+            <div id="form-note" class="helper-text">This is a placeholder – no data is saved.</div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Page 2: Client List View -->
+      <section id="clients" class="card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Clients</h2>
+            <p class="section-subtitle">Search and browse client records.</p>
+          </div>
+          <div class="search">
+            <label class="visually-hidden" for="searchName">Search by name</label>
+            <input type="search" id="searchName" placeholder="Search by name…" />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Fitness Goal</th>
+                <th scope="col">Start Date</th>
+                <th scope="col" class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 10 sample rows -->
+              <tr>
+                <td>Alex Johnson</td>
+                <td>alex.johnson@example.com</td>
+                <td>(555) 101-0001</td>
+                <td>Weight Loss</td>
+                <td>2025-01-05</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Brianna Lee</td>
+                <td>brianna.lee@example.com</td>
+                <td>(555) 101-0002</td>
+                <td>Muscle Gain</td>
+                <td>2025-02-10</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Chris Patel</td>
+                <td>chris.patel@example.com</td>
+                <td>(555) 101-0003</td>
+                <td>General Fitness</td>
+                <td>2025-03-15</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Dakota Smith</td>
+                <td>d.smith@example.com</td>
+                <td>(555) 101-0004</td>
+                <td>Endurance</td>
+                <td>2025-04-01</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Emilia Garcia</td>
+                <td>emilia.g@example.com</td>
+                <td>(555) 101-0005</td>
+                <td>Mobility</td>
+                <td>2025-04-18</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Farid Khan</td>
+                <td>farid.khan@example.com</td>
+                <td>(555) 101-0006</td>
+                <td>Weight Loss</td>
+                <td>2025-05-22</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Grace Liu</td>
+                <td>grace.liu@example.com</td>
+                <td>(555) 101-0007</td>
+                <td>Muscle Gain</td>
+                <td>2025-06-03</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Hector Martinez</td>
+                <td>hector.m@example.com</td>
+                <td>(555) 101-0008</td>
+                <td>General Fitness</td>
+                <td>2025-06-21</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Ivy Nguyen</td>
+                <td>ivy.nguyen@example.com</td>
+                <td>(555) 101-0009</td>
+                <td>Mobility</td>
+                <td>2025-07-08</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Jordan O'Neil</td>
+                <td>jordan.oneil@example.com</td>
+                <td>(555) 101-0010</td>
+                <td>Endurance</td>
+                <td>2025-07-30</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" type="button">Edit</button>
+                  <button class="btn btn-ghost danger" type="button">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="container">
+        <p>© <span id="year"></span> FitCRM. For educational use only.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Small enhancement: update year and wire up search filter (client-side only)
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const searchInput = document.getElementById('searchName');
+      const tableBody = document.querySelector('.table tbody');
+      if (searchInput && tableBody) {
+        searchInput.addEventListener('input', function (e) {
+          const q = e.target.value.toLowerCase();
+          for (const row of tableBody.rows) {
+            const name = row.cells[0].textContent.toLowerCase();
+            row.style.display = name.includes(q) ? '' : 'none';
+          }
+        });
+      }
+    </script>
+  </body>
+  </html>
+
+
