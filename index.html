@@ -1,74 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FitCRM – Home</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css" />
-  </head>
-  <body>
-    <header class="app-header">
-      <div class="container header-inner">
-        <a class="brand" href="index.html">
-          <div class="brand-mark" aria-hidden="true">🏃‍♀️</div>
-          <span class="brand-name">FitCRM</span>
-        </a>
-        <nav class="nav">
-          <a href="new-client.html" class="nav-link">New Client</a>
-          <a href="clients.html" class="nav-link">Client List</a>
-        </nav>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitCRM – Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+  <header class="app-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <div class="brand-mark" aria-hidden="true">🏃‍♀️</div>
+        <span class="brand-name">FitCRM</span>
+      </a>
+      <nav class="nav">
+        <a href="new-client.html" class="nav-link">New Client</a>
+        <a href="clients.html" class="nav-link">Client List</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>Manage clients with ease</h1>
+        <p>Lightweight CRM for trainers and gyms. Add clients, track goals, and keep everything tidy — all from your
+          browser.</p>
+        <div class="cta-group">
+          <a href="new-client.html" class="btn btn-primary">Add New Client</a>
+          <a href="clients.html" class="btn btn-ghost">View Client List</a>
+        </div>
       </div>
-    </header>
-
-    <main class="container">
-      <section class="hero">
-        <div class="hero-copy">
-          <h1>Manage clients with ease</h1>
-          <p>Lightweight CRM for trainers and gyms. Add clients, track goals, and keep everything tidy — all from your browser.</p>
-          <div class="cta-group">
-            <a href="new-client.html" class="btn btn-primary">Add New Client</a>
-            <a href="clients.html" class="btn btn-ghost">View Client List</a>
-          </div>
+      <div class="masonry">
+        <div class="tile span-3 tall">
+          <img class="tile-img"
+            src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=60"
+            alt="Strength training with dumbbells" />
         </div>
-        <div class="masonry">
-          <div class="tile span-3 tall">
-            <img class="tile-img" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=60" alt="Strength training with dumbbells" />
-          </div>
-          <div class="tile span-3">
-            <img class="tile-img" src="https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=1200&q=60" alt="Yoga pose on mat in studio" />
-          </div>
-          <div class="tile span-2">
-            <img class="tile-img" loading="lazy" src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1000&q=60" alt="Weightlifting equipment in a gym" />
-          </div>
-          <div class="tile span-2">
-            <img class="tile-img" src="https://images.unsplash.com/photo-1550345332-09e3ac987658?auto=format&fit=crop&w=1000&q=60" alt="Running watch timer close-up" />
-          </div>
+        <div class="tile span-3">
+          <img class="tile-img"
+            src="https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=1200&q=60"
+            alt="Yoga pose on mat in studio" />
         </div>
-      </section>
-
-      <section class="card">
-        <h2 class="section-title">What you can do</h2>
-        <p class="section-subtitle">Quick actions to get started.</p>
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <a class="btn btn-ghost" href="new-client.html">➕ Add Client</a>
-          <a class="btn btn-ghost" href="clients.html">📋 Browse Clients</a>
+        <div class="tile span-2">
+          <img class="tile-img" loading="lazy"
+            src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1000&q=60"
+            alt="Weightlifting equipment in a gym" />
         </div>
-      </section>
-    </main>
-
-    <footer class="app-footer">
-      <div class="container">
-        <p>© <span id="year"></span> FitCRM. For educational use only.</p>
+        <div class="tile span-2">
+          <img class="tile-img"
+            src="https://images.unsplash.com/photo-1550345332-09e3ac987658?auto=format&fit=crop&w=1000&q=60"
+            alt="Running watch timer close-up" />
+        </div>
       </div>
-    </footer>
+    </section>
 
-    <script>
-      document.getElementById('year').textContent = new Date().getFullYear();
-    </script>
-  </body>
-  </html>
+    <section class="card">
+      <h2 class="section-title">What you can do</h2>
+      <p class="section-subtitle">Quick actions to get started.</p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <a class="btn btn-ghost" href="new-client.html">➕ Add Client</a>
+        <a class="btn btn-ghost" href="clients.html">📋 Browse Clients</a>
+      </div>
+    </section>
+  </main>
 
+  <footer class="app-footer">
+    <div class="container">
+      <p>© <span id="year"></span> FitCRM.</p>
+    </div>
+  </footer>
 
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>
