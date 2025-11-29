@@ -147,6 +147,7 @@ function renderClientList() {
         var client = clients[i];
         var row = document.createElement('tr');
         row.style.cursor = 'pointer';
+        row.setAttribute('data-client-id', client.id);
 
         var emailText = client.email || '-';
         var phoneText = client.phone || '-';
@@ -159,25 +160,81 @@ function renderClientList() {
             '<td>' + goalText + '</td>' +
             '<td>' + dateText + '</td>' +
             '<td class="actions">' +
-            '<button class="btn btn-ghost" onclick="editClient(\'' + client.id + '\'); event.stopPropagation();">Edit</button>' +
-            '<button class="btn btn-ghost danger" onclick="deleteClient(\'' + client.id + '\'); event.stopPropagation();">Delete</button>' +
+            '<button class="btn btn-ghost btn-edit" data-client-id="' + client.id + '">Edit</button>' +
+            '<button class="btn btn-ghost danger btn-delete" data-client-id="' + client.id + '">Delete</button>' +
             '</td>';
-
-        // Add click event to view client - fix closure bug
-        (function(clientId) {
-            row.addEventListener('click', function (e) {
-                if (e.target.tagName === 'BUTTON') return;
-                window.location.href = 'client-view.html?id=' + clientId;
-            });
-        })(client.id);
 
         tableBody.appendChild(row);
     }
+
+    // Add event delegation for all buttons and row clicks
+    setupClientListEvents();
 }
 
-window.editClient = function(id) {
-    window.location.href = 'edit-client.html?id=' + id;
-};
+function setupClientListEvents() {
+    var tableBody = document.querySelector('.table tbody');
+    if (!tableBody) return;
+
+    // Remove old listener if exists to prevent duplicates
+    var newTableBody = tableBody.cloneNode(true);
+    tableBody.parentNode.replaceChild(newTableBody, tableBody);
+
+    // Add new event listener
+    newTableBody.addEventListener('click', function (e) {
+        var target = e.target;
+
+        // Handle Edit button
+        if (target.classList.contains('btn-edit')) {
+            var clientId = target.getAttribute('data-client-id');
+            if (clientId) {
+                window.location.href = 'edit-client.html?id=' + clientId;
+            }
+            return;
+        }
+
+        // Handle Delete button
+        if (target.classList.contains('btn-delete')) {
+            var clientId = target.getAttribute('data-client-id');
+            if (clientId) {
+                handleDeleteClient(clientId);
+            }
+            return;
+        }
+
+        // Handle row click to view client
+        var row = target.closest('tr');
+        if (row && row.hasAttribute('data-client-id')) {
+            // Don't navigate if clicking on a button
+            if (target.tagName === 'BUTTON' || target.closest('button')) {
+                return;
+            }
+            var clientId = row.getAttribute('data-client-id');
+            if (clientId) {
+                window.location.href = 'client-view.html?id=' + clientId;
+            }
+        }
+    });
+}
+
+function handleDeleteClient(id) {
+    var confirmDelete = confirm('Are you sure you want to delete this client?');
+    if (!confirmDelete) {
+        return;
+    }
+
+    var clients = getClients();
+    var newClients = [];
+
+    for (var i = 0; i < clients.length; i++) {
+        if (clients[i].id != id) {
+            newClients.push(clients[i]);
+        }
+    }
+
+    saveClients(newClients);
+    renderClientList();
+    alert('Client deleted successfully!');
+}
 
 // Edit Client Form
 function initEditClientForm() {
@@ -277,26 +334,6 @@ function initEditClientForm() {
         window.location.href = 'clients.html';
     });
 }
-
-window.deleteClient = function(id) {
-    var confirmDelete = confirm('Are you sure you want to delete this client?');
-    if (!confirmDelete) {
-        return;
-    }
-
-    var clients = getClients();
-    var newClients = [];
-
-    for (var i = 0; i < clients.length; i++) {
-        if (clients[i].id != id) {
-            newClients.push(clients[i]);
-        }
-    }
-
-    saveClients(newClients);
-    renderClientList();
-    alert('Client deleted successfully!');
-};
 
 // Client Detail View
 function initClientView() {
