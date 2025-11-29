@@ -407,13 +407,13 @@ function stripHtml(html) {
 document.addEventListener('DOMContentLoaded', function () {
     var path = window.location.pathname;
 
-    if (path.includes('new-client.html')) {
+    if (path.includes('new-client')) {
         initNewClientForm();
-    } else if (path.includes('edit-client.html')) {
+    } else if (path.includes('edit-client')) {
         initEditClientForm();
-    } else if (path.includes('clients.html')) {
+    } else if (path.includes('clients') && !path.includes('client-view')) {
         initClientList();
-    } else if (path.includes('client-view.html')) {
+    } else if (path.includes('client-view')) {
         initClientView();
     }
 
