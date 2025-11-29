@@ -1,16 +1,28 @@
 // Get all clients from localStorage
 function getClients() {
-    var clients = localStorage.getItem('fitcrm_clients');
-    if (clients) {
-        return JSON.parse(clients);
-    } else {
+    try {
+        var clients = localStorage.getItem('fitcrm_clients');
+        if (clients) {
+            return JSON.parse(clients);
+        } else {
+            return [];
+        }
+    } catch (e) {
+        console.error('Error reading from localStorage:', e);
         return [];
     }
 }
 
 // Save clients to localStorage
 function saveClients(clients) {
-    localStorage.setItem('fitcrm_clients', JSON.stringify(clients));
+    try {
+        localStorage.setItem('fitcrm_clients', JSON.stringify(clients));
+        return true;
+    } catch (e) {
+        console.error('Error saving to localStorage:', e);
+        alert('Error saving client data. Please check your browser settings.');
+        return false;
+    }
 }
 
 // Get a single client by ID
@@ -108,6 +120,10 @@ function initNewClientForm() {
 function initClientList() {
     var tableBody = document.querySelector('.table tbody');
     if (!tableBody) {
+        // Retry after a short delay in case DOM isn't ready
+        setTimeout(function() {
+            initClientList();
+        }, 100);
         return;
     }
 
@@ -134,10 +150,16 @@ function initClientList() {
 
 function renderClientList() {
     var tableBody = document.querySelector('.table tbody');
+    if (!tableBody) {
+        return;
+    }
+    
     var clients = getClients();
 
     if (clients.length == 0) {
         tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No clients found. Add a new client to get started.</td></tr>';
+        // Still set up events even with empty list
+        setupClientListEvents();
         return;
     }
 
@@ -160,8 +182,8 @@ function renderClientList() {
             '<td>' + goalText + '</td>' +
             '<td>' + dateText + '</td>' +
             '<td class="actions">' +
-            '<button class="btn btn-ghost btn-edit" data-client-id="' + client.id + '">Edit</button>' +
-            '<button class="btn btn-ghost danger btn-delete" data-client-id="' + client.id + '">Delete</button>' +
+            '<button class="btn btn-ghost btn-edit" data-client-id="' + client.id + '" type="button">Edit</button>' +
+            '<button class="btn btn-ghost danger btn-delete" data-client-id="' + client.id + '" type="button">Delete</button>' +
             '</td>';
 
         tableBody.appendChild(row);
@@ -171,49 +193,60 @@ function renderClientList() {
     setupClientListEvents();
 }
 
+// Store reference to avoid duplicate listeners
+var clientListEventAttached = false;
+
 function setupClientListEvents() {
     var tableBody = document.querySelector('.table tbody');
     if (!tableBody) return;
 
-    // Remove old listener if exists to prevent duplicates
-    var newTableBody = tableBody.cloneNode(true);
-    tableBody.parentNode.replaceChild(newTableBody, tableBody);
+    // Use event delegation on the table itself - more reliable for Netlify
+    var table = tableBody.closest('table');
+    if (!table) return;
 
-    // Add new event listener
-    newTableBody.addEventListener('click', function (e) {
-        var target = e.target;
+    // Only attach listener once using a flag
+    if (!clientListEventAttached) {
+        table.addEventListener('click', function (e) {
+            var target = e.target;
 
-        // Handle Edit button
-        if (target.classList.contains('btn-edit')) {
-            var clientId = target.getAttribute('data-client-id');
-            if (clientId) {
-                window.location.href = 'edit-client.html?id=' + clientId;
+            // Handle Edit button
+            if (target.classList.contains('btn-edit')) {
+                e.preventDefault();
+                e.stopPropagation();
+                var clientId = target.getAttribute('data-client-id');
+                if (clientId) {
+                    window.location.href = 'edit-client.html?id=' + clientId;
+                }
+                return false;
             }
-            return;
-        }
 
-        // Handle Delete button
-        if (target.classList.contains('btn-delete')) {
-            var clientId = target.getAttribute('data-client-id');
-            if (clientId) {
-                handleDeleteClient(clientId);
+            // Handle Delete button
+            if (target.classList.contains('btn-delete')) {
+                e.preventDefault();
+                e.stopPropagation();
+                var clientId = target.getAttribute('data-client-id');
+                if (clientId) {
+                    handleDeleteClient(clientId);
+                }
+                return false;
             }
-            return;
-        }
 
-        // Handle row click to view client
-        var row = target.closest('tr');
-        if (row && row.hasAttribute('data-client-id')) {
-            // Don't navigate if clicking on a button
-            if (target.tagName === 'BUTTON' || target.closest('button')) {
-                return;
+            // Handle row click to view client
+            var row = target.closest('tr');
+            if (row && row.hasAttribute('data-client-id')) {
+                // Don't navigate if clicking on a button
+                if (target.tagName === 'BUTTON' || target.closest('button')) {
+                    return;
+                }
+                e.preventDefault();
+                var clientId = row.getAttribute('data-client-id');
+                if (clientId) {
+                    window.location.href = 'client-view.html?id=' + clientId;
+                }
             }
-            var clientId = row.getAttribute('data-client-id');
-            if (clientId) {
-                window.location.href = 'client-view.html?id=' + clientId;
-            }
-        }
-    });
+        });
+        clientListEventAttached = true;
+    }
 }
 
 function handleDeleteClient(id) {
@@ -231,9 +264,10 @@ function handleDeleteClient(id) {
         }
     }
 
-    saveClients(newClients);
-    renderClientList();
-    alert('Client deleted successfully!');
+    if (saveClients(newClients)) {
+        renderClientList();
+        alert('Client deleted successfully!');
+    }
 }
 
 // Edit Client Form
@@ -444,15 +478,19 @@ function stripHtml(html) {
 
 // Start when page loads
 document.addEventListener('DOMContentLoaded', function () {
+    // More robust path detection - works with Netlify and local
     var path = window.location.pathname;
+    var filename = path.split('/').pop() || '';
+    var href = window.location.href;
 
-    if (path.includes('new-client.html')) {
+    // Check by filename first, then by path/href
+    if (filename === 'new-client.html' || path.includes('new-client.html') || href.includes('new-client.html')) {
         initNewClientForm();
-    } else if (path.includes('edit-client.html')) {
+    } else if (filename === 'edit-client.html' || path.includes('edit-client.html') || href.includes('edit-client.html')) {
         initEditClientForm();
-    } else if (path.includes('clients.html')) {
+    } else if (filename === 'clients.html' || path.includes('clients.html') || href.includes('clients.html')) {
         initClientList();
-    } else if (path.includes('client-view.html')) {
+    } else if (filename === 'client-view.html' || path.includes('client-view.html') || href.includes('client-view.html')) {
         initClientView();
     }
 
@@ -460,5 +498,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var yearEl = document.getElementById('year');
     if (yearEl) {
         yearEl.textContent = new Date().getFullYear();
+    }
+});
+
+// Also run on window load as fallback for Netlify
+window.addEventListener('load', function () {
+    // Re-initialize if DOMContentLoaded didn't catch it
+    var path = window.location.pathname;
+    var filename = path.split('/').pop() || '';
+    var href = window.location.href;
+
+    if (filename === 'clients.html' || path.includes('clients.html') || href.includes('clients.html')) {
+        // Re-render client list to ensure buttons work
+        var tableBody = document.querySelector('.table tbody');
+        if (tableBody && tableBody.children.length > 0) {
+            setupClientListEvents();
+        }
     }
 });
