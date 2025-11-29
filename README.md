@@ -9,12 +9,14 @@ A lightweight, frontend-only CRM webapp for fitness professionals to manage basi
 - Form validation (email format, required fields)
 - Data persistence using localStorage
 
+
 ### Page 2: Client List View
 - Display all clients in a responsive table
 - **Search**: Filter clients by name in real-time
 - **Edit**: Update client details with form repopulation
 - **Delete**: Remove clients with confirmation prompt
 - **View**: Click on any client row to view detailed information
+
 
 ### Page 3: Client Detail View
 - Display comprehensive client information
