@@ -1,23 +1,48 @@
 // Get all clients from localStorage
 function getClients() {
-    var clients = localStorage.getItem('fitcrm_clients');
+    // Check for new key first
+    var clients = localStorage.getItem('fitCRM_clients');
     if (clients) {
-        return JSON.parse(clients);
-    } else {
-        return [];
+        try {
+            return JSON.parse(clients);
+        } catch (e) {
+            console.error("Could not parse stored clients", e);
+            return [];
+        }
     }
+    
+    // Migrate from old key if it exists
+    var oldClients = localStorage.getItem('fitcrm_clients');
+    if (oldClients) {
+        try {
+            var parsed = JSON.parse(oldClients);
+            // Save to new key
+            localStorage.setItem('fitCRM_clients', oldClients);
+            // Remove old key
+            localStorage.removeItem('fitcrm_clients');
+            return parsed;
+        } catch (e) {
+            console.error("Could not parse old clients data", e);
+            return [];
+        }
+    }
+    
+    return [];
 }
 
 // Save clients to localStorage
 function saveClients(clients) {
-    localStorage.setItem('fitcrm_clients', JSON.stringify(clients));
+    localStorage.setItem('fitCRM_clients', JSON.stringify(clients));
 }
 
 // Get a single client by ID
 function getClientById(id) {
     var clients = getClients();
+    // Convert id to number for comparison
+    var idNum = typeof id === 'string' ? parseInt(id, 10) : id;
     for (var i = 0; i < clients.length; i++) {
-        if (clients[i].id == id) {
+        var clientId = typeof clients[i].id === 'string' ? parseInt(clients[i].id, 10) : clients[i].id;
+        if (clientId === idNum) {
             return clients[i];
         }
     }
@@ -82,7 +107,7 @@ function initNewClientForm() {
 
         // Create new client
         var client = {
-            id: Date.now().toString(),
+            id: Date.now(),
             fullName: fullName,
             age: age,
             gender: gender,
@@ -112,6 +137,36 @@ function initClientList() {
     }
 
     renderClientList();
+
+    // Event delegation for table buttons and row clicks
+    tableBody.addEventListener('click', function (e) {
+        var target = e.target;
+        var editBtn = target.closest('.edit-btn');
+        var deleteBtn = target.closest('.delete-btn');
+        var row = target.closest('tr[data-view]');
+
+        // Handle Edit button
+        if (editBtn) {
+            e.stopPropagation();
+            var clientId = editBtn.getAttribute('data-id');
+            editClient(clientId);
+            return;
+        }
+
+        // Handle Delete button
+        if (deleteBtn) {
+            e.stopPropagation();
+            var clientId = deleteBtn.getAttribute('data-id');
+            deleteClient(clientId);
+            return;
+        }
+
+        // Handle row click to view client
+        if (row && !editBtn && !deleteBtn) {
+            var clientId = row.getAttribute('data-id');
+            window.location.href = 'client-view.html?id=' + clientId;
+        }
+    });
 
     // Search
     var searchInput = document.getElementById('searchName');
@@ -147,6 +202,8 @@ function renderClientList() {
         var client = clients[i];
         var row = document.createElement('tr');
         row.style.cursor = 'pointer';
+        row.setAttribute('data-id', client.id);
+        row.setAttribute('data-view', 'true');
 
         var emailText = client.email || '-';
         var phoneText = client.phone || '-';
@@ -159,22 +216,18 @@ function renderClientList() {
             '<td>' + goalText + '</td>' +
             '<td>' + dateText + '</td>' +
             '<td class="actions">' +
-            '<button class="btn btn-ghost" onclick="editClient(\'' + client.id + '\'); event.stopPropagation();">Edit</button>' +
-            '<button class="btn btn-ghost danger" onclick="deleteClient(\'' + client.id + '\'); event.stopPropagation();">Delete</button>' +
+            '<button class="btn btn-ghost edit-btn" type="button" data-id="' + client.id + '" aria-label="Edit ' + client.fullName + '">Edit</button>' +
+            '<button class="btn btn-ghost danger delete-btn" type="button" data-id="' + client.id + '" aria-label="Delete ' + client.fullName + '">Delete</button>' +
             '</td>';
-
-        // Add click event to view client
-        row.addEventListener('click', function () {
-            var clientId = this.querySelector('button').onclick.toString().match(/'([^']+)'/)[1];
-            window.location.href = 'client-view.html?id=' + clientId;
-        });
 
         tableBody.appendChild(row);
     }
 }
 
 function editClient(id) {
-    window.location.href = 'edit-client.html?id=' + id;
+    // Ensure id is properly formatted
+    var idNum = typeof id === 'string' ? parseInt(id, 10) : id;
+    window.location.href = 'edit-client.html?id=' + idNum;
 }
 
 // Edit Client Form
@@ -257,8 +310,10 @@ function initEditClientForm() {
 
         // Update client
         var clients = getClients();
+        var idNum = typeof clientId === 'string' ? parseInt(clientId, 10) : clientId;
         for (var i = 0; i < clients.length; i++) {
-            if (clients[i].id == clientId) {
+            var currentId = typeof clients[i].id === 'string' ? parseInt(clients[i].id, 10) : clients[i].id;
+            if (currentId === idNum) {
                 clients[i].fullName = fullName;
                 clients[i].age = age;
                 clients[i].gender = gender;
@@ -277,16 +332,35 @@ function initEditClientForm() {
 }
 
 function deleteClient(id) {
-    var confirmDelete = confirm('Are you sure you want to delete this client?');
+    // Convert id to number for comparison
+    var idNum = typeof id === 'string' ? parseInt(id, 10) : id;
+    var clients = getClients();
+    var clientToDelete = null;
+    
+    // Find the client to get their name for confirmation
+    for (var i = 0; i < clients.length; i++) {
+        var clientId = typeof clients[i].id === 'string' ? parseInt(clients[i].id, 10) : clients[i].id;
+        if (clientId === idNum) {
+            clientToDelete = clients[i];
+            break;
+        }
+    }
+    
+    if (!clientToDelete) {
+        alert('Client not found');
+        return;
+    }
+    
+    var confirmDelete = confirm('Are you sure you want to delete client "' + clientToDelete.fullName + '"?');
     if (!confirmDelete) {
         return;
     }
 
-    var clients = getClients();
     var newClients = [];
 
     for (var i = 0; i < clients.length; i++) {
-        if (clients[i].id != id) {
+        var clientId = typeof clients[i].id === 'string' ? parseInt(clients[i].id, 10) : clients[i].id;
+        if (clientId !== idNum) {
             newClients.push(clients[i]);
         }
     }
@@ -323,14 +397,24 @@ function initClientView() {
 
     // Show training history
     var historyList = document.getElementById('trainingHistory');
-    if (client.trainingHistory && client.trainingHistory.length > 0) {
-        var historyHTML = '';
-        for (var i = 0; i < client.trainingHistory.length; i++) {
-            historyHTML += '<li>' + client.trainingHistory[i] + '</li>';
+    if (historyList) {
+        if (client.trainingHistory && client.trainingHistory.length > 0) {
+            var historyHTML = '';
+            for (var i = 0; i < client.trainingHistory.length; i++) {
+                historyHTML += '<li>' + client.trainingHistory[i] + '</li>';
+            }
+            historyList.innerHTML = historyHTML;
+        } else {
+            historyList.innerHTML = '<li>No training history yet</li>';
         }
-        historyList.innerHTML = historyHTML;
-    } else {
-        historyList.innerHTML = '<li>No training history yet</li>';
+    }
+
+    // Set up Edit button
+    var editClientBtn = document.getElementById('editClientBtn');
+    if (editClientBtn) {
+        editClientBtn.addEventListener('click', function() {
+            editClient(clientId);
+        });
     }
 
     // Get exercises
@@ -339,17 +423,40 @@ function initClientView() {
 
 function fetchExercises(clientId) {
     var exercisesList = document.getElementById('exercisesList');
+    if (!exercisesList) return;
+    
     exercisesList.innerHTML = '<li>Loading exercises...</li>';
 
-    fetch('https://wger.de/api/v2/exerciseinfo/?limit=50')
+    // Convert clientId to number for consistent offset calculation
+    var idNum = typeof clientId === 'string' ? parseInt(clientId, 10) : clientId;
+
+    fetch('https://wger.de/api/v2/exerciseinfo/?language=2&limit=50')
         .then(function (response) {
+            if (!response.ok) {
+                throw new Error('API request failed with status: ' + response.status);
+            }
             return response.json();
         })
         .then(function (data) {
             if (data.results && data.results.length > 0) {
+                // Filter exercises with English translations
+                var exercisesWithEnglish = data.results.filter(function(exercise) {
+                    if (exercise.translations && Array.isArray(exercise.translations)) {
+                        return exercise.translations.some(function(t) {
+                            return t.language === 2 && t.name;
+                        });
+                    }
+                    return false;
+                });
+
+                if (exercisesWithEnglish.length === 0) {
+                    exercisesList.innerHTML = '<li>No English exercises found</li>';
+                    return;
+                }
+
                 // Use client ID to pick different exercises for each client
-                var offset = parseInt(clientId) % (data.results.length - 5);
-                var selected = data.results.slice(offset, offset + 5);
+                var offset = idNum % Math.max(1, exercisesWithEnglish.length - 5);
+                var selected = exercisesWithEnglish.slice(offset, offset + 5);
                 var html = '';
 
                 for (var i = 0; i < selected.length; i++) {
