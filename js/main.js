@@ -113,36 +113,6 @@ function initClientList() {
 
     renderClientList();
 
-    // Event delegation for table buttons (like the example)
-    tableBody.addEventListener('click', function(event) {
-        var target = event.target;
-        var button = target.closest('button');
-        var row = target.closest('tr');
-        
-        if (!row) return;
-        
-        var clientId = row.getAttribute('data-client-id');
-        if (!clientId) return;
-        
-        // If clicked on a button
-        if (button) {
-            event.stopPropagation();
-            
-            // Check if it's the delete button (has danger class)
-            if (button.classList.contains('danger')) {
-                deleteClient(clientId);
-            } 
-            // Otherwise it's the edit button
-            else if (button.classList.contains('btn-ghost')) {
-                editClient(clientId);
-            }
-            return;
-        }
-        
-        // If clicked on row (not button), view client
-        window.location.href = 'client-view.html?id=' + clientId;
-    });
-
     // Search
     var searchInput = document.getElementById('searchName');
     if (searchInput) {
@@ -177,7 +147,6 @@ function renderClientList() {
         var client = clients[i];
         var row = document.createElement('tr');
         row.style.cursor = 'pointer';
-        row.setAttribute('data-client-id', client.id);
 
         var emailText = client.email || '-';
         var phoneText = client.phone || '-';
@@ -190,19 +159,25 @@ function renderClientList() {
             '<td>' + goalText + '</td>' +
             '<td>' + dateText + '</td>' +
             '<td class="actions">' +
-            '<button class="btn btn-ghost" type="button" data-id="' + client.id + '">Edit</button>' +
-            '<button class="btn btn-ghost danger" type="button" data-id="' + client.id + '">Delete</button>' +
+            '<button class="btn btn-ghost" onclick="editClient(\'' + client.id + '\'); event.stopPropagation();">Edit</button>' +
+            '<button class="btn btn-ghost danger" onclick="deleteClient(\'' + client.id + '\'); event.stopPropagation();">Delete</button>' +
             '</td>';
+
+        // Add click event to view client - fix closure bug
+        (function(clientId) {
+            row.addEventListener('click', function (e) {
+                if (e.target.tagName === 'BUTTON') return;
+                window.location.href = 'client-view.html?id=' + clientId;
+            });
+        })(client.id);
 
         tableBody.appendChild(row);
     }
 }
 
-function editClient(id) {
+window.editClient = function(id) {
     window.location.href = 'edit-client.html?id=' + id;
-}
-
-window.editClient = editClient;
+};
 
 // Edit Client Form
 function initEditClientForm() {
@@ -303,27 +278,15 @@ function initEditClientForm() {
     });
 }
 
-function deleteClient(id) {
-    var clients = getClients();
-    var clientToDelete = null;
-    
-    for (var i = 0; i < clients.length; i++) {
-        if (clients[i].id == id) {
-            clientToDelete = clients[i];
-            break;
-        }
-    }
-    
-    if (!clientToDelete) {
-        return;
-    }
-    
-    var confirmDelete = confirm('Are you sure you want to delete client "' + clientToDelete.fullName + '"?');
+window.deleteClient = function(id) {
+    var confirmDelete = confirm('Are you sure you want to delete this client?');
     if (!confirmDelete) {
         return;
     }
 
+    var clients = getClients();
     var newClients = [];
+
     for (var i = 0; i < clients.length; i++) {
         if (clients[i].id != id) {
             newClients.push(clients[i]);
@@ -333,9 +296,7 @@ function deleteClient(id) {
     saveClients(newClients);
     renderClientList();
     alert('Client deleted successfully!');
-}
-
-window.deleteClient = deleteClient;
+};
 
 // Client Detail View
 function initClientView() {
@@ -447,17 +408,14 @@ function stripHtml(html) {
 // Start when page loads
 document.addEventListener('DOMContentLoaded', function () {
     var path = window.location.pathname;
-    var filename = path.split('/').pop() || '';
-    var href = window.location.href;
 
-    // More reliable path detection for both localhost and Netlify
-    if (filename === 'new-client.html' || path.includes('new-client.html') || href.includes('new-client.html')) {
+    if (path.includes('new-client.html')) {
         initNewClientForm();
-    } else if (filename === 'edit-client.html' || path.includes('edit-client.html') || href.includes('edit-client.html')) {
+    } else if (path.includes('edit-client.html')) {
         initEditClientForm();
-    } else if (filename === 'clients.html' || path.includes('clients.html') || href.includes('clients.html')) {
+    } else if (path.includes('clients.html')) {
         initClientList();
-    } else if (filename === 'client-view.html' || path.includes('client-view.html') || href.includes('client-view.html')) {
+    } else if (path.includes('client-view.html')) {
         initClientView();
     }
 
