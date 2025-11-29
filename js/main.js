@@ -31,8 +31,12 @@ function initNewClientForm() {
         return;
     }
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
+    // Handle form submission
+    var handleSubmit = function(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
         var fullName = document.getElementById('fullName').value;
         var age = document.getElementById('age').value;
@@ -101,7 +105,16 @@ function initNewClientForm() {
         alert('Client added successfully!');
         form.reset();
         window.location.href = 'clients.html';
-    });
+    };
+
+    // Attach to form submit
+    form.addEventListener('submit', handleSubmit);
+    
+    // Also attach to button click as backup
+    var submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.addEventListener('click', handleSubmit);
+    }
 }
 
 // Client List
@@ -408,14 +421,16 @@ function stripHtml(html) {
 // Start when page loads
 document.addEventListener('DOMContentLoaded', function () {
     var path = window.location.pathname;
+    var filename = path.split('/').pop() || window.location.href.split('/').pop();
 
-    if (path.includes('new-client.html')) {
+    // More reliable path detection
+    if (filename === 'new-client.html' || path.includes('new-client.html') || window.location.href.includes('new-client.html')) {
         initNewClientForm();
-    } else if (path.includes('edit-client.html')) {
+    } else if (filename === 'edit-client.html' || path.includes('edit-client.html') || window.location.href.includes('edit-client.html')) {
         initEditClientForm();
-    } else if (path.includes('clients.html')) {
+    } else if (filename === 'clients.html' || path.includes('clients.html') || window.location.href.includes('clients.html')) {
         initClientList();
-    } else if (path.includes('client-view.html')) {
+    } else if (filename === 'client-view.html' || path.includes('client-view.html') || window.location.href.includes('client-view.html')) {
         initClientView();
     }
 
