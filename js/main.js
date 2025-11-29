@@ -133,6 +133,10 @@ function initNewClientForm() {
 function initClientList() {
     var tableBody = document.querySelector('.table tbody');
     if (!tableBody) {
+        // Retry after a short delay in case DOM isn't ready
+        setTimeout(function() {
+            initClientList();
+        }, 100);
         return;
     }
 
@@ -189,10 +193,16 @@ function initClientList() {
 
 function renderClientList() {
     var tableBody = document.querySelector('.table tbody');
+    if (!tableBody) {
+        return;
+    }
+    
     var clients = getClients();
 
     if (clients.length == 0) {
         tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No clients found. Add a new client to get started.</td></tr>';
+        // Still set up events even with empty list
+        setupClientListEvents();
         return;
     }
 
@@ -222,6 +232,9 @@ function renderClientList() {
 
         tableBody.appendChild(row);
     }
+
+    // Add event delegation for all buttons and row clicks
+    setupClientListEvents();
 }
 
 function editClient(id) {
@@ -512,15 +525,19 @@ function stripHtml(html) {
 
 // Start when page loads
 document.addEventListener('DOMContentLoaded', function () {
+    // More robust path detection - works with Netlify and local
     var path = window.location.pathname;
+    var filename = path.split('/').pop() || '';
+    var href = window.location.href;
 
-    if (path.includes('new-client.html')) {
+    // Check by filename first, then by path/href
+    if (filename === 'new-client.html' || path.includes('new-client.html') || href.includes('new-client.html')) {
         initNewClientForm();
-    } else if (path.includes('edit-client.html')) {
+    } else if (filename === 'edit-client.html' || path.includes('edit-client.html') || href.includes('edit-client.html')) {
         initEditClientForm();
-    } else if (path.includes('clients.html')) {
+    } else if (filename === 'clients.html' || path.includes('clients.html') || href.includes('clients.html')) {
         initClientList();
-    } else if (path.includes('client-view.html')) {
+    } else if (filename === 'client-view.html' || path.includes('client-view.html') || href.includes('client-view.html')) {
         initClientView();
     }
 
@@ -528,5 +545,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var yearEl = document.getElementById('year');
     if (yearEl) {
         yearEl.textContent = new Date().getFullYear();
+    }
+});
+
+// Also run on window load as fallback for Netlify
+window.addEventListener('load', function () {
+    // Re-initialize if DOMContentLoaded didn't catch it
+    var path = window.location.pathname;
+    var filename = path.split('/').pop() || '';
+    var href = window.location.href;
+
+    if (filename === 'clients.html' || path.includes('clients.html') || href.includes('clients.html')) {
+        // Re-render client list to ensure buttons work
+        var tableBody = document.querySelector('.table tbody');
+        if (tableBody && tableBody.children.length > 0) {
+            setupClientListEvents();
+        }
     }
 });
