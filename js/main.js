@@ -163,19 +163,21 @@ function renderClientList() {
             '<button class="btn btn-ghost danger" onclick="deleteClient(\'' + client.id + '\'); event.stopPropagation();">Delete</button>' +
             '</td>';
 
-        // Add click event to view client
-        row.addEventListener('click', function () {
-            var clientId = this.querySelector('button').onclick.toString().match(/'([^']+)'/)[1];
-            window.location.href = 'client-view.html?id=' + clientId;
-        });
+        // Add click event to view client 
+        (function(clientId) {
+            row.addEventListener('click', function (e) {
+                if (e.target.tagName === 'BUTTON') return;
+                window.location.href = 'client-view.html?id=' + clientId;
+            });
+        })(client.id);
 
         tableBody.appendChild(row);
     }
 }
 
-function editClient(id) {
+window.editClient = function(id) {
     window.location.href = 'edit-client.html?id=' + id;
-}
+};
 
 // Edit Client Form
 function initEditClientForm() {
@@ -276,7 +278,7 @@ function initEditClientForm() {
     });
 }
 
-function deleteClient(id) {
+window.deleteClient = function(id) {
     var confirmDelete = confirm('Are you sure you want to delete this client?');
     if (!confirmDelete) {
         return;
@@ -294,7 +296,7 @@ function deleteClient(id) {
     saveClients(newClients);
     renderClientList();
     alert('Client deleted successfully!');
-}
+};
 
 // Client Detail View
 function initClientView() {
